@@ -1,12 +1,28 @@
-resource "aws_iam_policy" "iam_policy_ceos_s3_ia_knowledge_space_rw" {
-  count = (local.team == "iagen" && var.tenant.name == "airflow") ? 1 : 0
-
-  name = "iam-policy-ceos-s3-ai-knowledge-${var.tenant.env}-${local.team}-${var.tenant.name}-rw"
-  policy = templatefile("${path.module}/../../policies/s3-iam-policy-ai-knowledge-allow-rw.tftpl",
-    {
-      bucket_name = "cacf-ceos-test-airflow"
-      aws_account = var.aws_account_id
-      path_prefix = local.path_prefix
-    }
-  )
+{
+    "Statement" : [
+        {
+            "Action"   : "s3:*",
+            "Effect"   : "Allow",
+            "Resource" : [
+                "arn:aws:s3:::${bucket_name}",
+                "arn:aws:s3:*:${aws_account}:job/*",
+                "arn:aws:s3:::${bucket_name}/${path_prefix}*",
+                "arn:aws:s3:*:${aws_account}:accesspoint/*"
+            ],
+            "Sid"      : "VisualEditor0"
+        },
+        {
+            "Sid": "AllowKMS",
+            "Effect": "Allow",
+            "Action": "kms:*",
+            "Resource": "*"
+        },
+        {
+            "Sid": "ListAllMyBuckets",
+            "Effect": "Allow",
+            "Action": "s3:ListAllMyBuckets",
+            "Resource": "*"
+        }
+    ],
+    "Version"   : "2012-10-17"
 }
