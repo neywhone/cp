@@ -1,4 +1,6 @@
 resource "aws_iam_policy" "iam_policy_ceos_s3_ia_knowledge_space_rw" {
+  count = local.team == "iagen" ? 1 : 0
+
   name = "iam-policy-ceos-s3-ai-knowledge-${var.tenant.env}-${local.team}-${var.tenant.name}-rw"
   policy = templatefile("${path.module}/../../policies/s3-iam-policy-ai-knowledge-allow-rw.tftpl",
     {
