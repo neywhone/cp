@@ -1,5 +1,10 @@
-resource "aws_iam_role_policy_attachment" "self_policy_attachement" {
-  for_each   = [for policy in tenant.iam_policies.self : policy if var.tenant.aws_iam_role_name != null]
-  policy_arn = each.value
-  role       = var.tenant.aws_iam_role_name
+resource "aws_iam_policy" "iam_policy_ceos_s3_ia_knowledge_space_rw" {
+  name = "iam-policy-ceos-s3-ai-knowledge-${var.tenant.env}-${local.team}-${var.tenant.name}-rw"
+  policy = templatefile("${path.module}/../../policies/s3-iam-policy-ai-knowledge-allow-rw.tftpl",
+    {
+      bucket_name = "cacf-ceos-test-airflow"
+      aws_account = var.aws_account_id
+      path_prefix = local.path_prefix
+    }
+  )
 }
