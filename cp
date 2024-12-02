@@ -1,35 +1,9 @@
-resource "random_password" "random_role_password" {
-  # longer length instead of special chars to ease inclusion in URI connection strings
-  length  = 22
-  special = false
-}
+variable "secret_name" {
+  description = "Le nom du secret"
+  type        = string
 
-resource "aws_secretsmanager_secret" "secret_role_password" {
-  name = var.secret_name
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9/_+=.@-]+$", var.secret_name))
+    error_message = "Le nom du secret ne peut contenir que des caractères alphanumériques et les symboles /_+=.@-."
+  }
 }
-resource "aws_secretsmanager_secret_version" "secret_role_password" {
-  secret_id     = aws_secretsmanager_secret.secret_role_password.id
-  secret_string = random_password.random_role_password.result
-}
-│ Error: only alphanumeric characters and /_+=.@- special characters are allowed in "name"
-│ 
-│   with module.vector_db["core"].aws_secretsmanager_secret.secret_role_password,
-│   on modules/vector-db/secrets.tf line 8, in resource "aws_secretsmanager_secret" "secret_role_password":
-│    8:   name = var.secret_name
-│ 
-╵
-╷
-│ Error: only alphanumeric characters and /_+=.@- special characters are allowed in "name"
-│ 
-│   with module.vector_db["develop"].aws_secretsmanager_secret.secret_role_password,
-│   on modules/vector-db/secrets.tf line 8, in resource "aws_secretsmanager_secret" "secret_role_password":
-│    8:   name = var.secret_name
-│ 
-╵
-╷
-│ Error: only alphanumeric characters and /_+=.@- special characters are allowed in "name"
-│ 
-│   with module.vector_db["uat"].aws_secretsmanager_secret.secret_role_password,
-│   on modules/vector-db/secrets.tf line 8, in resource "aws_secretsmanager_secret" "secret_role_password":
-│    8:   name = var.secret_name
-│ 
